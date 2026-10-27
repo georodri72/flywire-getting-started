@@ -1,0 +1,127 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlyWire Getting-Started Guide (unofficial)</title><style>
+body{font:17px/1.65 system-ui,-apple-system,Segoe UI,sans-serif;max-width:760px;margin:0 auto;padding:24px 18px;color:#1d1d1f;background:#fff}
+h1{font-size:2rem;line-height:1.2}h2{margin-top:2.2em;border-top:1px solid #eee;padding-top:1em}
+a{color:#0b5cad;word-break:break-word}code{font:14px ui-monospace,Menlo,monospace;background:#f3f4f6;padding:1px 4px;border-radius:4px}
+pre{position:relative;background:#f6f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px;overflow-x:auto}pre code{background:none;padding:0}
+.copy{position:absolute;top:8px;right:8px;font:12px system-ui;padding:4px 8px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}td,th{border:1px solid #e5e7eb;padding:8px;vertical-align:top;text-align:left}
+nav.toc{background:#f9fafb;border:1px solid #eee;border-radius:8px;padding:8px 16px}footer{margin-top:3em;font-size:14px;color:#555;border-top:1px solid #eee;padding-top:1em}
+@media(prefers-color-scheme:dark){body{background:#111;color:#e6e6e6}pre,code,nav.toc{background:#1c1c1e!important;border-color:#333}.copy{background:#222;color:#eee}a{color:#6ab0ff}td,th,h2,footer{border-color:#333}footer{color:#aaa}}
+</style></head><body>
+<nav class="toc"><strong>Contents</strong><div class="toc">
+<ul>
+<li><a href="#flywire-getting-started-guide-for-beginners">FlyWire Getting-Started Guide (for beginners)</a><ul>
+<li><a href="#1-what-flywire-is">1. What FlyWire is</a></li>
+<li><a href="#2-pick-your-path">2. Pick your path</a></li>
+<li><a href="#3-no-code-path-codex">3. No-code path: Codex</a></li>
+<li><a href="#4-python-setup">4. Python setup</a></li>
+<li><a href="#5-your-token-the-step-that-breaks-most-often">5. Your token (the step that breaks most often)</a></li>
+<li><a href="#6-troubleshooting">6. Troubleshooting</a></li>
+<li><a href="#7-pin-your-version-so-results-dont-change">7. Pin your version (so results don't change)</a></li>
+</ul>
+</li>
+<li><a href="#then-pass-materialization783-to-query-functions-eg">then pass materialization=783 to query functions, e.g.:</a></li>
+<li><a href="#flywiresynapsesget_connectivityids-materialization783">flywire.synapses.get_connectivity(ids, materialization=783)</a><ul>
+<li><a href="#8-three-starter-examples">8. Three starter examples</a></li>
+<li><a href="#9-citing-and-terms">9. Citing and terms</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<h1 id="flywire-getting-started-guide-for-beginners">FlyWire Getting-Started Guide (for beginners)</h1>
+<p>Last checked: Oct 27, 2026. Tested on Linux, Python 3, fafbseg 3.2.3, caveclient 8.2.1.</p>
+<h2 id="1-what-flywire-is">1. What FlyWire is</h2>
+<p>FlyWire is a free wiring map of an entire adult fruit fly brain: about 150K neurons and more than 50M synapses. The public release is called FAFB v783 (139,255 neurons). Source: <a href="https://codex.flywire.ai/">https://codex.flywire.ai/</a></p>
+<h2 id="2-pick-your-path">2. Pick your path</h2>
+<ul>
+<li><strong>No code:</strong> browse and download tables in Codex (section 3).</li>
+<li><strong>Python:</strong> live queries, meshes and connections (sections 4–8).</li>
+<li><strong>Raw images or segmentation:</strong> tens of terabytes. Contact the team (see the maintainer's reply in <a href="https://github.com/seung-lab/FlyConnectome/issues/1">https://github.com/seung-lab/FlyConnectome/issues/1</a>).</li>
+</ul>
+<h2 id="3-no-code-path-codex">3. No-code path: Codex</h2>
+<ol>
+<li>Go to <a href="https://codex.flywire.ai/">https://codex.flywire.ai/</a> and sign in with a Google account. Codex requires sign-in for rate-limiting. If you don't have a Google account, email flywire@princeton.edu.</li>
+<li>Search neurons or cell types in the browser.</li>
+<li>Download tables from <a href="https://codex.flywire.ai/api/download">https://codex.flywire.ai/api/download</a>. A maintainer pointed people who wanted the "full dataset" there (<a href="https://github.com/seung-lab/FlyConnectome/issues/1">https://github.com/seung-lab/FlyConnectome/issues/1</a>).</li>
+<li>Also available without sign-in: the official v783 files on Zenodo at <a href="https://zenodo.org/records/10676866">https://zenodo.org/records/10676866</a>. They include <code>proofread_root_ids_783.npy</code> (1 MB), <code>proofread_connections_783.feather</code> (852 MB) and <code>flywire_synapses_783.feather</code> (9.5 GB).</li>
+<li>UNTESTED: the exact list of Codex downloads, because it sits behind sign-in.</li>
+</ol>
+<h2 id="4-python-setup">4. Python setup</h2>
+<pre><code class="language-bash">python3 -m venv flywire-env
+source flywire-env/bin/activate        # Windows: flywire-env\Scripts\activate
+pip install fafbseg caveclient
+</code></pre>
+<p>TESTED: installs fafbseg 3.2.3, caveclient 8.2.1 and navis 1.12.0 (<a href="https://pypi.org/project/fafbseg/">https://pypi.org/project/fafbseg/</a>).</p>
+<h2 id="5-your-token-the-step-that-breaks-most-often">5. Your token (the step that breaks most often)</h2>
+<ol>
+<li>Log in at <a href="https://global.daf-apis.com/auth/api/v1/user/token">https://global.daf-apis.com/auth/api/v1/user/token</a> with your FlyWire account and copy the token text.</li>
+<li>If it shows an empty <code>[]</code>, open <a href="https://global.daf-apis.com/auth/api/v1/create_token">https://global.daf-apis.com/auth/api/v1/create_token</a> instead. Note that a new token invalidates the old one, so reuse the same token on each computer (<a href="https://caveclient.readthedocs.io/en/latest/guide/authentication.html">https://caveclient.readthedocs.io/en/latest/guide/authentication.html</a>).</li>
+<li>Save it once:</li>
+</ol>
+<pre><code class="language-python">from fafbseg import flywire
+flywire.set_chunkedgraph_secret(&quot;PASTE_YOUR_TOKEN&quot;)
+</code></pre>
+<p>Source: <a href="https://fafbseg-py.readthedocs.io/en/latest/source/tutorials/flywire_setup.html">https://fafbseg-py.readthedocs.io/en/latest/source/tutorials/flywire_setup.html</a>
+- <strong>Where the file goes (resolved):</strong> both file names in the docs are valid. caveclient checks <code>~/.cloudvolume/secrets/cave-secret.json</code> and also a server-specific <code>~/.cloudvolume/secrets/global.daf-apis.com-cave-secret.json</code> (see <code>default_token_name</code> and <code>server_token_filename</code> in <a href="https://github.com/CAVEconnectome/CAVEclient/blob/master/caveclient/auth.py">https://github.com/CAVEconnectome/CAVEclient/blob/master/caveclient/auth.py</a>). The file content should be <code>{"token": "YOUR_TOKEN"}</code>. The quote typo in the fafbseg example is just a typo.
+- UNTESTED: saving and using a real token. I had none to test with.</p>
+<h2 id="6-troubleshooting">6. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>No chunkedgraph/CAVE secret ... found</code></td>
+<td>No token saved yet. Do section 5. (TESTED: this is the exact error you get without a token.)</td>
+</tr>
+<tr>
+<td><code>No Graphene authentication token was provided</code> even though the token is "valid" (R on Windows)</td>
+<td>R and Python disagree about where your home folder is. Copy <code>cave-secret.json</code> into both <code>C:/Users/&lt;you&gt;/.cloudvolume/secrets</code> and <code>C:/Users/&lt;you&gt;/Documents/.cloudvolume/secrets</code>, as the maintainer suggested in <a href="https://github.com/seung-lab/cloud-volume/issues/534">https://github.com/seung-lab/cloud-volume/issues/534</a></td>
+</tr>
+<tr>
+<td>Old token stopped working</td>
+<td>You made a new token somewhere else. Copy the newest one to every computer (caveclient docs above).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-pin-your-version-so-results-dont-change">7. Pin your version (so results don't change)</h2>
+<p>Neuron IDs change as people keep editing the map. For results anyone can repeat, use the public dataset and materialization 783:</p>
+<pre><code class="language-python">from fafbseg import flywire
+flywire.set_default_dataset(&quot;public&quot;)    # TESTED, works without a token
+# then pass materialization=783 to query functions, e.g.:
+# flywire.synapses.get_connectivity(ids, materialization=783)
+</code></pre>
+<p>Sources: <code>set_default_dataset</code> and the <code>flat_783</code> mapping in <a href="https://github.com/navis-org/fafbseg-py/blob/master/fafbseg/flywire/utils.py">https://github.com/navis-org/fafbseg-py/blob/master/fafbseg/flywire/utils.py</a>, and the <code>materialization</code> parameter in <a href="https://github.com/navis-org/fafbseg-py/blob/master/fafbseg/flywire/synapses.py">https://github.com/navis-org/fafbseg-py/blob/master/fafbseg/flywire/synapses.py</a>. Codex notes that annotations update about weekly (<a href="https://codex.flywire.ai/about_flywire">https://codex.flywire.ai/about_flywire</a>).</p>
+<h2 id="8-three-starter-examples">8. Three starter examples</h2>
+<p><strong>A. Count the proofread neurons (no token needed). TESTED, prints 139255:</strong></p>
+<pre><code class="language-python">import numpy as np, urllib.request
+url = &quot;<a href="https://zenodo.org/records/10676866/files/proofread_root_ids_783.npy?download=1&quot;">https://zenodo.org/records/10676866/files/proofread_root_ids_783.npy?download=1&quot;</a>
+urllib.request.urlretrieve(url, &quot;ids.npy&quot;)
+ids = np.load(&quot;ids.npy&quot;)
+print(len(ids), ids[:3])
+</code></pre>
+<p><strong>B. Who connects to a neuron (token needed). UNTESTED past the token check:</strong></p>
+<pre><code class="language-python">from fafbseg import flywire
+flywire.set_default_dataset(&quot;public&quot;)
+print(flywire.synapses.get_connectivity(ids[:1], materialization=783))
+</code></pre>
+<p><strong>C. Look at the official connection table offline (no token, 852 MB download). UNTESTED (too large for my test):</strong></p>
+<pre><code class="language-python">import pandas as pd   # pip install pandas pyarrow
+df = pd.read_feather(&quot;proofread_connections_783.feather&quot;)
+print(df.head())
+</code></pre>
+<p>Download it from <a href="https://zenodo.org/records/10676866">https://zenodo.org/records/10676866</a>.</p>
+<h2 id="9-citing-and-terms">9. Citing and terms</h2>
+<ul>
+<li>In publications, cite the papers listed on Codex's About page, and cite Codex itself as <a href="http://dx.doi.org/10.13140/RG.2.2.35928.67844">http://dx.doi.org/10.13140/RG.2.2.35928.67844</a> (<a href="https://codex.flywire.ai/about_flywire">https://codex.flywire.ai/about_flywire</a>).</li>
+<li>Using unreleased (pre-publication) data has separate rules. They're linked from the same page.</li>
+<li>The FlyWire Terms of Service are linked from Codex sign-in. Main paper: <a href="https://www.nature.com/articles/s41586-024-07558-y">https://www.nature.com/articles/s41586-024-07558-y</a></li>
+</ul>
+<footer>Unofficial community guide. Not affiliated with or endorsed by HHMI, Janelia Research Campus, FlyWire, or Princeton University. Facts are linked to their sources above. Main sources: <a href="https://codex.flywire.ai/">FlyWire Codex</a>, <a href="https://fafbseg-py.readthedocs.io/">fafbseg docs</a>, <a href="https://caveclient.readthedocs.io/">CAVEclient docs</a>, <a href="https://zenodo.org/records/10676866">Zenodo v783 data</a>. Last checked Oct 27, 2026.</footer>
+<script>document.querySelectorAll("pre").forEach(p=>{const b=document.createElement("button");b.className="copy";b.textContent="Copy";b.onclick=()=>{navigator.clipboard.writeText(p.querySelector("code").innerText);b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1500)};p.appendChild(b)});</script>
+</body></html>
